@@ -19,7 +19,7 @@ import sys
 import time
 
 import numpy as np
-import redis
+from shm_store import SharedMemStore
 
 HERE        = os.path.dirname(os.path.abspath(__file__))
 MOTION_PATH = os.path.join(HERE, "assets", "motions", "punching03.pkl")
@@ -148,20 +148,7 @@ def main():
                         help="Path to .pkl motion file (default: bundled punching03.pkl)")
     args = parser.parse_args()
 
-    # Connect to Redis (must already be running — started by run_robot.py)
-    r = redis.Redis(host="localhost", port=6379)
-    for attempt in range(30):
-        try:
-            r.ping()
-            break
-        except Exception:
-            if attempt == 0:
-                print("Waiting for Redis...")
-            time.sleep(0.5)
-    else:
-        print("ERROR: Cannot connect to Redis on localhost:6379.")
-        print("Make sure run_robot.py is running first.")
-        sys.exit(1)
+    r = SharedMemStore()
 
     print(f"Loading motion: {args.motion}")
     stream = build_mimic_stream(args.motion)

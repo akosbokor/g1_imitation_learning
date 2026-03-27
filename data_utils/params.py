@@ -2,18 +2,16 @@ import numpy as np
 
 
 DEFAULT_MIMIC_OBS_G1 = np.concatenate([
-                    np.array([ 0.793]),
-                    np.array([0, 0, 0]),
-                    np.array([0, 0, 0]),
-                    np.array([ 0.0]),
-                    # 25 dof
-                    np.array([-0.2, 0.0, 0.0, 0.4, -0.2, 0.0,  # left leg (6)
-                        -0.2, 0.0, 0.0, 0.4, -0.2, 0.0,  # right leg (6)
-                        0.0, 0.0, 0.0, # torso (1)
-                        # 0.0, 0.2, 0.0, 1.2, # left arm (4)
-                        # 0.0, -0.2, 0.0, 1.2, # right arm (4)
-                        0.0, 0.2, 0.0, 1.2, 0.0, # left arm (4)
-                        0.0, -0.2, 0.0, 1.2, 0.0, # right arm (4)
+                    np.array([ 0.772]),          # height (matches boxing frame 0)
+                    np.array([0, 0, 0]),          # rpy
+                    np.array([0, 0, 0]),          # root_vel_local
+                    np.array([ 0.0]),             # ang_vel_z
+                    # 25 dof (leg + waist + arms, wrist roll zeros at [19] and [24])
+                    np.array([-0.2, 0.0, 0.0, 0.4, -0.2, 0.0,   # left leg (6)
+                        -0.2, 0.0, 0.0, 0.4, -0.2, 0.0,          # right leg (6)
+                        -0.052, -0.017, 0.089,                    # waist (3) — boxing init
+                        0.534,  0.806,  0.355, -0.316, 0.0,       # left arm (4) + wrist roll (1)
+                        0.524, -0.862, -0.302, -0.279, 0.0,       # right arm (4) + wrist roll (1)
                         ])
                 ])
 
