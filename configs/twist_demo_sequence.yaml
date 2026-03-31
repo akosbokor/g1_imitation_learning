@@ -1,0 +1,34 @@
+# TWIST demo sequence: pick up box → stand → walk → stop → boxing
+#
+# Run:
+#   python3 run_twist_sequence.py --sequence configs/twist_demo_sequence.yaml
+#   python3 run_twist_sequence.py --sequence configs/twist_demo_sequence.yaml --loop
+
+transition: 1.5   # cosine-eased blend between motions (seconds)
+
+motions:
+
+  # 1. Pick up a box
+  - path: accad/A5___pick_up_box.pkl
+
+  # 2. Stand — settle for 2s
+  - path: accad/A1___Stand.pkl
+    hold_last: 2.0
+
+  # 3. Stand-to-walk: starts from rest (avoids lateral lurch) — truncated to 3s
+  #    cmu/07_01 was replaced because it starts mid-stride with large lateral vel (-0.34)
+  - path: accad/B1___stand_to_walk.pkl
+    max_duration: 1.0
+
+  # 4. Walk → stand (natural deceleration)
+  - path: accad/B2___walk_to_stand.pkl
+
+  # 5. Stand and stop — brief pause before boxing
+  - path: accad/A1___Stand.pkl
+    hold_last: 1.5
+
+  # 6. Jab (confirmed working, upper-body dominant)
+  - path: eyes_japan/karate_08_jab_yokoyama.pkl
+    repeat: 1
+    max_roll: 0.3
+    max_pitch: 0.3
