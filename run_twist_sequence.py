@@ -209,11 +209,20 @@ def load_sequence_yaml(yaml_path):
     return entries, default_transition
 
 
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
 def resolve_path(motion_path):
-    """Return absolute pkl path, trying dataset-relative first."""
-    candidate = os.path.join(DATASET, motion_path)
-    if os.path.exists(candidate):
-        return candidate
+    """Return absolute pkl path.
+
+    Search order:
+    1. motions/ directory in project root (tracked in git)
+    2. Full TWIST dataset directory
+    3. Absolute/relative path as-is
+    """
+    for base in (os.path.join(PROJECT_ROOT, "motions"), DATASET):
+        candidate = os.path.join(base, motion_path)
+        if os.path.exists(candidate):
+            return candidate
     if os.path.exists(motion_path):
         return motion_path
     print(f"Motion not found: {motion_path}")
