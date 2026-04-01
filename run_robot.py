@@ -1,6 +1,6 @@
 """
-G1 Boxing — Real Robot Controller
-===================================
+G1 Pick Up Box — Real Robot Controller
+=======================================
 Runs the TWIST low-level policy on the real Unitree G1 robot.
 Reads mimic reference from shared memory (written by run_motion.py) and
 sends joint position commands to the robot at 50 Hz.
@@ -8,7 +8,7 @@ sends joint position commands to the robot at 50 Hz.
 Startup sequence (use the wireless remote):
   1. Run run_robot.py  →  robot enters zero-torque mode
   2. Run run_motion.py →  loads motion, waits for robot
-  3. Press START       →  robot moves to boxing guard pose (2 s)
+  3. Press START       →  robot moves to standing pose (2 s)
   4. Press A           →  RSI history pre-fill, policy loop begins
   5. Press SELECT      →  exit, robot returns to zero-torque
 
@@ -91,18 +91,17 @@ def main():
     config = Config(CONFIG_PATH)
     env    = G1RealWorldEnv(net=args.net, config=config)
 
-    # Hardware target: robot physically moves here (boxing guard = motion frame 0)
+    # Hardware target: robot physically moves here (standing pose = motion frame 0)
     hardware_dof_pos = np.concatenate([config.default_angles, config.arm_waist_target])
 
-    # Policy observation default: must match TWIST training (standing pose).
-    # The policy was trained with (dof_pos - standing_pose) as the arm deviation term.
-    # Using boxing-guard here would give zero deviation and confuse the policy.
+    # Policy observation default matches training standing pose.
+    # arm_waist_target == TRAINING_ARM_WAIST so steady_state_action is zero.
     TRAINING_ARM_WAIST = np.array([0.0, 0.0, 0.0,       # waist
                                     0.0, 0.4, 0.0, 1.2,  # left arm
                                     0.0, -0.4, 0.0, 1.2], dtype=np.float32)  # right arm
     default_dof_pos = np.concatenate([config.default_angles, TRAINING_ARM_WAIST])
 
-    # Steady-state action needed to hold the boxing guard from the training default
+    # Steady-state action to hold the starting pose from the training default
     steady_state_action = np.clip(
         (hardware_dof_pos - default_dof_pos) / ACTION_SCALE, -10.0, 10.0
     ).astype(np.float32)
@@ -117,10 +116,10 @@ def main():
     print("\n[1/3] Zero-torque mode — press START on remote to continue...")
     env.zero_torque_state()
 
-    print("[2/3] Moving to boxing guard pose (2 s)...")
+    print("[2/3] Moving to standing pose (2 s)...")
     env.move_to_default_pos()
 
-    print("[3/3] Holding guard pose — press A to start policy, SELECT to exit.")
+    print("[3/3] Holding standing pose — press A to start policy, SELECT to exit.")
     env.default_pos_state()
 
     # Wait for run_motion.py to provide init_pose_g1 (written on startup, before warm-up)
@@ -153,6 +152,7 @@ def main():
         for _ in range(HISTORY_LEN):
             history.append(obs_full_init.copy())
         print("History pre-filled with frame-0 observation (RSI).")
+
 
     print("\n✓ Policy loop running.  Press SELECT to stop.\n")
     r.set("policy_running", "1")   # signal run_motion.py to start warm-up

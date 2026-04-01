@@ -35,9 +35,9 @@ arm_waist_kds: [4, 4, 4,
                 5, 5, 5, 5,
                 5, 5, 5, 5]
 
-arm_waist_target: [ -0.052, -0.017,  0.089,   # waist (matches boxing frame 0)
-                     0.534,  0.806,  0.355, -0.316,   # left arm
-                     0.524, -0.862, -0.302, -0.279]   # right arm
+arm_waist_target: [  0.0,  0.0,  0.0,            # waist
+                     0.0,  0.4,  0.0,  1.2,     # left arm
+                     0.0, -0.4,  0.0,  1.2]     # right arm
 
 # wrist
 wrist_joint2motor_idx: [19, 20, 21,

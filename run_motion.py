@@ -1,13 +1,13 @@
 """
-G1 Boxing — Motion Streamer
-===========================
-Loads the bundled punching03.pkl motion, converts it to TWIST mimic observations,
-and streams them into Redis at 50 Hz so the robot policy tracks the motion.
+G1 Pick Up Box — Motion Streamer
+=================================
+Loads the pick_up_box.pkl motion, converts it to TWIST mimic observations,
+and streams them into shared memory at 50 Hz so the robot policy tracks the motion.
 
-Run AFTER starting run_robot.py (which also starts Redis internally).
+Run AFTER starting run_robot.py.
 
 Usage:
-    python3 run_motion.py           # streams punching03 once
+    python3 run_motion.py           # streams pick_up_box once
     python3 run_motion.py --loop    # loops continuously
 """
 
@@ -22,7 +22,7 @@ import numpy as np
 from shm_store import SharedMemStore
 
 HERE        = os.path.dirname(os.path.abspath(__file__))
-MOTION_PATH = os.path.join(HERE, "assets", "motions", "punching03.pkl")
+MOTION_PATH = os.path.join(HERE, "motions", "pick_up_box.pkl")
 
 sys.path.insert(0, HERE)
 from data_utils.params import DEFAULT_MIMIC_OBS
@@ -145,7 +145,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--loop", action="store_true", help="Loop motion continuously")
     parser.add_argument("--motion", default=MOTION_PATH,
-                        help="Path to .pkl motion file (default: bundled punching03.pkl)")
+                        help="Path to .pkl motion file (default: pick_up_box.pkl)")
     args = parser.parse_args()
 
     r = SharedMemStore()
@@ -173,7 +173,7 @@ def main():
         r.set("action_mimic_g1", json.dumps(stream[0].tolist()))
         time.sleep(CONTROL_DT)
 
-    print("Streaming boxing motion... (Ctrl+C to stop)")
+    print("Streaming pick up box motion... (Ctrl+C to stop)")
     try:
         while True:
             for obs in stream:
